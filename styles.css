@@ -116,6 +116,8 @@ body {
 .nav-item:hover { background: var(--accent-soft); color: var(--ink-1); }
 .nav-item.active { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
 .nav-icon { width: 20px; text-align: center; }
+a.nav-item { text-decoration: none; }
+.nav-ext { margin-left: auto; color: var(--ink-3); font-size: 12px; }
 
 .sidebar-footer {
   margin-top: auto;
