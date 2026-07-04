@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flopilove · Dashboard de Diseño IA</title>
+  <meta name="description" content="Dashboard personal de diseño con IA: galería, generador, prompts y proyectos.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+
+    <!-- ===== Sidebar ===== -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">🎨</span>
+        <div class="brand-text">
+          <strong>Flopilove</strong>
+          <span>Dashboard de Diseño IA</span>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-item active" data-view="inicio">
+          <span class="nav-icon">✦</span> Inicio
+        </button>
+        <button class="nav-item" data-view="galeria">
+          <span class="nav-icon">🖼</span> Galería
+        </button>
+        <button class="nav-item" data-view="generar">
+          <span class="nav-icon">⚡</span> Generar
+        </button>
+        <button class="nav-item" data-view="prompts">
+          <span class="nav-icon">✏️</span> Prompts
+        </button>
+        <button class="nav-item" data-view="proyectos">
+          <span class="nav-icon">📁</span> Proyectos
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="nav-item" data-view="ajustes">
+          <span class="nav-icon">⚙️</span> Ajustes
+        </button>
+        <button class="nav-item" id="theme-toggle" title="Cambiar tema">
+          <span class="nav-icon" id="theme-icon">🌙</span> <span id="theme-label">Modo oscuro</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ===== Main ===== -->
+    <main class="main">
+
+      <!-- ===== Inicio ===== -->
+      <section class="view active" id="view-inicio">
+        <header class="view-header">
+          <div>
+            <h1>Hola, Flopi <span class="wave">👋</span></h1>
+            <p class="subtitle">Tu estudio de diseño con IA, todo en un solo lugar.</p>
+          </div>
+        </header>
+
+        <div class="stat-row" id="stat-row">
+          <!-- stat tiles se renderizan por JS -->
+        </div>
+
+        <div class="quick-actions">
+          <button class="btn btn-primary" data-goto="generar">⚡ Generar un diseño</button>
+          <button class="btn" data-goto="galeria" data-action="upload">🖼 Subir diseños</button>
+          <button class="btn" data-goto="proyectos" data-action="new-project">📁 Nuevo proyecto</button>
+        </div>
+
+        <div class="home-section">
+          <div class="section-title-row">
+            <h2>Últimos diseños</h2>
+            <button class="btn btn-ghost btn-sm" data-goto="galeria">Ver todo →</button>
+          </div>
+          <div class="recent-grid" id="recent-grid">
+            <p class="empty-hint" id="recent-empty">Aún no hay diseños. Genera o sube el primero ✨</p>
+          </div>
+        </div>
+
+        <div class="home-section">
+          <div class="section-title-row">
+            <h2>Proyectos en proceso</h2>
+            <button class="btn btn-ghost btn-sm" data-goto="proyectos">Ver todo →</button>
+          </div>
+          <div class="home-projects" id="home-projects">
+            <p class="empty-hint" id="home-projects-empty">Sin proyectos activos por ahora.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Galería ===== -->
+      <section class="view" id="view-galeria">
+        <header class="view-header">
+          <div>
+            <h1>Galería</h1>
+            <p class="subtitle">Todos tus diseños, organizados y a mano.</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-primary" id="btn-upload">＋ Subir diseños</button>
+            <input type="file" id="file-input" accept="image/*" multiple hidden>
+          </div>
+        </header>
+
+        <div class="toolbar">
+          <input type="search" id="gallery-search" class="input search" placeholder="Buscar por nombre, etiqueta o prompt…">
+          <div class="chip-row" id="gallery-tags"></div>
+        </div>
+
+        <div class="dropzone" id="dropzone">
+          <div class="gallery-grid" id="gallery-grid"></div>
+          <p class="empty-hint big" id="gallery-empty">
+            Arrastra imágenes aquí o usa <strong>＋ Subir diseños</strong>.<br>
+            También puedes crear nuevas desde <strong>⚡ Generar</strong>.
+          </p>
+        </div>
+      </section>
+
+      <!-- ===== Generar ===== -->
+      <section class="view" id="view-generar">
+        <header class="view-header">
+          <div>
+            <h1>Generar</h1>
+            <p class="subtitle">Describe tu idea y deja que la IA proponga el diseño.</p>
+          </div>
+        </header>
+
+        <div class="generate-layout">
+          <div class="card generate-form">
+            <label class="field-label" for="gen-prompt">Prompt</label>
+            <textarea id="gen-prompt" class="input" rows="4"
+              placeholder="Ej: logo minimalista para estudio de diseño floral, paleta lavanda y crema, estilo línea fina…"></textarea>
+
+            <label class="field-label">Estilo (opcional)</label>
+            <div class="chip-row" id="style-chips">
+              <button class="chip" data-style="estilo minimalista, líneas limpias">Minimalista</button>
+              <button class="chip" data-style="ilustración flat, colores planos">Flat</button>
+              <button class="chip" data-style="acuarela suave, texturas orgánicas">Acuarela</button>
+              <button class="chip" data-style="render 3D, iluminación suave de estudio">3D</button>
+              <button class="chip" data-style="fotorrealista, alta definición">Foto</button>
+              <button class="chip" data-style="diseño de logo vectorial, fondo plano">Logo</button>
+              <button class="chip" data-style="collage editorial, tipografía expresiva">Editorial</button>
+            </div>
+
+            <div class="field-grid">
+              <div>
+                <label class="field-label" for="gen-provider">Motor</label>
+                <select id="gen-provider" class="input"></select>
+              </div>
+              <div>
+                <label class="field-label" for="gen-size">Formato</label>
+                <select id="gen-size" class="input">
+                  <option value="square">Cuadrado (1:1)</option>
+                  <option value="landscape">Horizontal (16:10)</option>
+                  <option value="portrait">Vertical (10:16)</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="ogai-model-field" hidden>
+              <label class="field-label" for="gen-ogai-model">Modelo de OpenGen</label>
+              <select id="gen-ogai-model" class="input"></select>
+            </div>
+
+            <p class="provider-note" id="provider-note"></p>
+
+            <div class="form-actions">
+              <button class="btn btn-primary btn-lg" id="btn-generate">⚡ Generar diseño</button>
+              <button class="btn btn-ghost" id="btn-save-prompt" title="Guardar este prompt en tu biblioteca">💾 Guardar prompt</button>
+            </div>
+          </div>
+
+          <div class="card generate-result" id="generate-result">
+            <div class="result-placeholder" id="result-placeholder">
+              <span class="result-emoji">🪄</span>
+              <p>Tu diseño aparecerá aquí.</p>
+            </div>
+            <div class="result-loading" id="result-loading" hidden>
+              <div class="spinner"></div>
+              <p>Generando… esto puede tardar unos segundos.</p>
+            </div>
+            <div class="result-content" id="result-content" hidden>
+              <img id="result-img" alt="Diseño generado">
+              <div class="result-actions">
+                <input type="text" id="result-name" class="input" placeholder="Nombre del diseño">
+                <input type="text" id="result-tags" class="input" placeholder="Etiquetas separadas por coma">
+                <div class="result-buttons">
+                  <button class="btn btn-primary" id="btn-save-design">💾 Guardar en galería</button>
+                  <button class="btn" id="btn-regenerate">🔄 Otra versión</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Prompts ===== -->
+      <section class="view" id="view-prompts">
+        <header class="view-header">
+          <div>
+            <h1>Prompts</h1>
+            <p class="subtitle">Tu biblioteca de prompts favoritos, listos para reutilizar.</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-primary" id="btn-new-prompt">＋ Nuevo prompt</button>
+          </div>
+        </header>
+
+        <div class="toolbar">
+          <input type="search" id="prompt-search" class="input search" placeholder="Buscar prompts…">
+        </div>
+
+        <div class="prompt-grid" id="prompt-grid"></div>
+        <p class="empty-hint big" id="prompts-empty">
+          Guarda aquí tus mejores prompts para no perderlos nunca. ✏️
+        </p>
+      </section>
+
+      <!-- ===== Proyectos ===== -->
+      <section class="view" id="view-proyectos">
+        <header class="view-header">
+          <div>
+            <h1>Proyectos</h1>
+            <p class="subtitle">Sigue el estado de cada encargo de diseño.</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-primary" id="btn-new-project">＋ Nuevo proyecto</button>
+          </div>
+        </header>
+
+        <div class="kanban" id="kanban">
+          <div class="kanban-col" data-status="pendiente">
+            <div class="kanban-head">
+              <span class="status-dot status-pendiente"></span>
+              <h3>Pendiente</h3>
+              <span class="kanban-count" id="count-pendiente">0</span>
+            </div>
+            <div class="kanban-cards" id="col-pendiente"></div>
+          </div>
+          <div class="kanban-col" data-status="proceso">
+            <div class="kanban-head">
+              <span class="status-dot status-proceso"></span>
+              <h3>En proceso</h3>
+              <span class="kanban-count" id="count-proceso">0</span>
+            </div>
+            <div class="kanban-cards" id="col-proceso"></div>
+          </div>
+          <div class="kanban-col" data-status="entregado">
+            <div class="kanban-head">
+              <span class="status-dot status-entregado"></span>
+              <h3>Entregado</h3>
+              <span class="kanban-count" id="count-entregado">0</span>
+            </div>
+            <div class="kanban-cards" id="col-entregado"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Ajustes ===== -->
+      <section class="view" id="view-ajustes">
+        <header class="view-header">
+          <div>
+            <h1>Ajustes</h1>
+            <p class="subtitle">Claves, integraciones y respaldo de tus datos.</p>
+          </div>
+        </header>
+
+        <div class="settings-stack">
+          <div class="card">
+            <h2>Motores de IA</h2>
+            <p class="card-desc">
+              <strong>Pollinations</strong> funciona gratis y sin clave.
+              Para usar <strong>OpenAI</strong> pega tu clave aquí — se guarda solo en este navegador, nunca se sube a ningún lado.
+            </p>
+            <label class="field-label" for="openai-key">Clave de API de OpenAI (opcional)</label>
+            <div class="key-row">
+              <input type="password" id="openai-key" class="input" placeholder="sk-…">
+              <button class="btn" id="btn-save-key">Guardar</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>OPEN GENERATIVE AI <span class="badge badge-on">conectado</span></h2>
+            <p class="card-desc">
+              Tu <strong>OpenGen Studio</strong> (repo <code>Open-Generative-AI</code>) está integrado como motor
+              de imágenes en la pestaña <strong>Generar</strong>, con modelos como Flux, Midjourney v7, Imagen 4 y
+              GPT-4o Image. Usa la misma clave de
+              <a href="https://muapi.ai" target="_blank" rel="noopener">muapi.ai</a> que en el Studio
+              — se guarda solo en este navegador. Para video, audio y edición de imágenes, abre el
+              <a href="https://thelabsolutionscl.github.io/Open-Generative-AI/" target="_blank" rel="noopener">Studio completo</a>.
+            </p>
+            <label class="field-label" for="muapi-key">Clave de muapi.ai</label>
+            <div class="key-row">
+              <input type="password" id="muapi-key" class="input" placeholder="Tu clave de muapi.ai">
+              <button class="btn" id="btn-save-muapi-key">Guardar</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Respaldo de datos</h2>
+            <p class="card-desc">
+              Tus diseños, prompts y proyectos viven en este navegador. Exporta un respaldo de vez en cuando,
+              o para llevarte todo a otro dispositivo.
+            </p>
+            <div class="form-actions">
+              <button class="btn" id="btn-export">⬇️ Exportar todo (.json)</button>
+              <button class="btn" id="btn-import">⬆️ Importar respaldo</button>
+              <input type="file" id="import-input" accept="application/json" hidden>
+            </div>
+          </div>
+
+          <div class="card card-danger">
+            <h2>Zona de peligro</h2>
+            <p class="card-desc">Borra todos los datos del dashboard en este navegador. No hay vuelta atrás.</p>
+            <button class="btn btn-danger" id="btn-wipe">🗑 Borrar todos los datos</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ===== Lightbox de diseño ===== -->
+  <div class="modal-backdrop" id="lightbox" hidden>
+    <div class="modal modal-lightbox">
+      <button class="modal-close" data-close="lightbox">✕</button>
+      <div class="lightbox-body">
+        <div class="lightbox-img-wrap">
+          <img id="lightbox-img" alt="">
+        </div>
+        <div class="lightbox-meta">
+          <input type="text" id="lightbox-name" class="input input-title" placeholder="Nombre del diseño">
+          <input type="text" id="lightbox-tags" class="input" placeholder="Etiquetas separadas por coma">
+          <div class="lightbox-prompt-wrap" id="lightbox-prompt-wrap" hidden>
+            <label class="field-label">Prompt usado</label>
+            <p class="lightbox-prompt" id="lightbox-prompt"></p>
+          </div>
+          <p class="lightbox-date" id="lightbox-date"></p>
+          <div class="lightbox-actions">
+            <button class="btn btn-primary" id="btn-lightbox-save">Guardar cambios</button>
+            <button class="btn" id="btn-lightbox-download">⬇️ Descargar</button>
+            <button class="btn" id="btn-lightbox-fav">☆ Favorito</button>
+            <button class="btn btn-danger" id="btn-lightbox-delete">Eliminar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Modal prompt ===== -->
+  <div class="modal-backdrop" id="prompt-modal" hidden>
+    <div class="modal">
+      <button class="modal-close" data-close="prompt-modal">✕</button>
+      <h2 id="prompt-modal-title">Nuevo prompt</h2>
+      <label class="field-label" for="prompt-title">Título</label>
+      <input type="text" id="prompt-title" class="input" placeholder="Ej: Logos florales minimalistas">
+      <label class="field-label" for="prompt-text">Prompt</label>
+      <textarea id="prompt-text" class="input" rows="5" placeholder="Escribe el prompt completo…"></textarea>
+      <label class="field-label" for="prompt-tags">Etiquetas</label>
+      <input type="text" id="prompt-tags" class="input" placeholder="logo, floral, minimalista">
+      <div class="form-actions">
+        <button class="btn btn-primary" id="btn-prompt-save">Guardar</button>
+        <button class="btn btn-ghost" data-close="prompt-modal">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Modal proyecto ===== -->
+  <div class="modal-backdrop" id="project-modal" hidden>
+    <div class="modal">
+      <button class="modal-close" data-close="project-modal">✕</button>
+      <h2 id="project-modal-title">Nuevo proyecto</h2>
+      <label class="field-label" for="project-name">Nombre</label>
+      <input type="text" id="project-name" class="input" placeholder="Ej: Branding cafetería Luna">
+      <label class="field-label" for="project-client">Cliente (opcional)</label>
+      <input type="text" id="project-client" class="input" placeholder="Ej: Cafetería Luna">
+      <div class="field-grid">
+        <div>
+          <label class="field-label" for="project-status">Estado</label>
+          <select id="project-status" class="input">
+            <option value="pendiente">Pendiente</option>
+            <option value="proceso">En proceso</option>
+            <option value="entregado">Entregado</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label" for="project-due">Fecha límite (opcional)</label>
+          <input type="date" id="project-due" class="input">
+        </div>
+      </div>
+      <label class="field-label" for="project-notes">Notas</label>
+      <textarea id="project-notes" class="input" rows="3" placeholder="Detalles, entregables, links…"></textarea>
+      <div class="form-actions">
+        <button class="btn btn-primary" id="btn-project-save">Guardar</button>
+        <button class="btn btn-danger" id="btn-project-delete" hidden>Eliminar</button>
+        <button class="btn btn-ghost" data-close="project-modal">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="db.js"></script>
+  <script src="providers.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
