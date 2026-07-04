@@ -37,9 +37,9 @@
         <button class="nav-item" data-view="proyectos">
           <span class="nav-icon">📁</span> Proyectos
         </button>
-        <a class="nav-item" href="studio/" target="_blank" rel="noopener" title="OpenGen Studio: video, audio y edición">
-          <span class="nav-icon">🎬</span> Studio <span class="nav-ext">↗</span>
-        </a>
+        <button class="nav-item" data-view="studio" title="OpenGen Studio: video, audio y edición">
+          <span class="nav-icon">🎬</span> Studio
+        </button>
       </nav>
 
       <div class="sidebar-footer">
@@ -260,6 +260,21 @@
             <div class="kanban-cards" id="col-entregado"></div>
           </div>
         </div>
+      </section>
+
+      <!-- ===== Studio (OpenGen embebido) ===== -->
+      <section class="view view-studio" id="view-studio">
+        <header class="view-header">
+          <div>
+            <h1>OpenGen Studio</h1>
+            <p class="subtitle">Tu OPEN GENERATIVE AI: imagen, video, audio, edición y upscale.</p>
+          </div>
+          <div class="header-actions">
+            <a class="btn btn-sm" href="studio/" target="_blank" rel="noopener">Pantalla completa ↗</a>
+          </div>
+        </header>
+        <iframe id="studio-frame" class="studio-frame" data-src="studio/" title="OpenGen Studio"
+          allow="clipboard-write"></iframe>
       </section>
 
       <!-- ===== Ajustes ===== -->

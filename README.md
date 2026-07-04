@@ -47,11 +47,12 @@ polling del resultado) a través del mismo proxy CORS que usa OpenGen Studio.
 - **Modelos texto→imagen disponibles**: Flux Schnell, Flux Dev, Midjourney v7,
   Imagen 4, GPT-4o Image, Ideogram v3 y Seedream 4.5 (subconjunto curado del
   Studio, definido en `OGAI_MODELS` dentro de [`providers.js`](providers.js)).
-- **Studio completo instalado**: la app OpenGen Studio vive en
-  [`studio/`](studio/) dentro de este mismo sitio (video, audio, edición,
-  upscale y más). Se abre desde el menú lateral (🎬 Studio) y comparte la
-  clave de muapi.ai con el dashboard, guardándola en el navegador para no
-  tener que pegarla en cada visita.
+- **Studio integrado en el dashboard**: la app OpenGen Studio vive en
+  [`studio/`](studio/) y se muestra embebida como sección 🎬 **Studio** del
+  propio dashboard (video, audio, edición, upscale y más), con opción de
+  abrirla a pantalla completa. Comparte la clave de muapi.ai con el
+  dashboard, guardándola en el navegador para no tener que pegarla en cada
+  visita.
 
 ## Estructura
 

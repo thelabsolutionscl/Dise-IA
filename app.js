@@ -77,6 +77,10 @@ function showView(name) {
   $$('.nav-item[data-view]').forEach((b) => b.classList.toggle('active', b.dataset.view === name));
   const view = $('#view-' + name);
   if (view) view.classList.add('active');
+  if (name === 'studio') {
+    const frame = $('#studio-frame');
+    if (!frame.src) frame.src = frame.dataset.src; // carga perezosa: solo al entrar
+  }
   if (name === 'inicio') renderHome();
   if (name === 'galeria') renderGallery();
   if (name === 'prompts') renderPrompts();
