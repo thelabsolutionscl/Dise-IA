@@ -80,7 +80,11 @@ function lsGet(key, fallback) {
 }
 
 function lsSet(key, value) {
-  localStorage.setItem(LS_PREFIX + key, JSON.stringify(value));
+  try {
+    localStorage.setItem(LS_PREFIX + key, JSON.stringify(value));
+  } catch {
+    /* almacenamiento no disponible (modo privado / iframe restringido) */
+  }
 }
 
 function lsRemoveAll() {

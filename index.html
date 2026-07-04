@@ -160,6 +160,11 @@
               </div>
             </div>
 
+            <div id="ogai-model-field" hidden>
+              <label class="field-label" for="gen-ogai-model">Modelo de OpenGen</label>
+              <select id="gen-ogai-model" class="input"></select>
+            </div>
+
             <p class="provider-note" id="provider-note"></p>
 
             <div class="form-actions">
@@ -277,13 +282,21 @@
             </div>
           </div>
 
-          <div class="card card-integration">
-            <h2>OPEN GENERATIVE AI <span class="badge badge-soon">próximamente</span></h2>
+          <div class="card">
+            <h2>OPEN GENERATIVE AI <span class="badge badge-on">conectado</span></h2>
             <p class="card-desc">
-              Espacio reservado para integrar tu repositorio de <strong>OPEN GENERATIVE AI</strong> como motor de
-              generación propio. Cuando esté conectado, aparecerá como opción en la pestaña <strong>Generar</strong>.
-              La integración se define en <code>providers.js</code>.
+              Tu <strong>OpenGen Studio</strong> (repo <code>Open-Generative-AI</code>) está integrado como motor
+              de imágenes en la pestaña <strong>Generar</strong>, con modelos como Flux, Midjourney v7, Imagen 4 y
+              GPT-4o Image. Usa la misma clave de
+              <a href="https://muapi.ai" target="_blank" rel="noopener">muapi.ai</a> que en el Studio
+              — se guarda solo en este navegador. Para video, audio y edición de imágenes, abre el
+              <a href="https://thelabsolutionscl.github.io/Open-Generative-AI/" target="_blank" rel="noopener">Studio completo</a>.
             </p>
+            <label class="field-label" for="muapi-key">Clave de muapi.ai</label>
+            <div class="key-row">
+              <input type="password" id="muapi-key" class="input" placeholder="Tu clave de muapi.ai">
+              <button class="btn" id="btn-save-muapi-key">Guardar</button>
+            </div>
           </div>
 
           <div class="card">

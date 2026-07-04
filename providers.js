@@ -74,20 +74,88 @@ const PROVIDERS = {
   },
 
   /* ------------------------------------------------------------
-     PUNTO DE INTEGRACIÓN: OPEN GENERATIVE AI
-     Cuando el repo esté conectado, cambia available a true e
-     implementa generate() llamando a su código o API.
+     OPEN GENERATIVE AI (OpenGen Studio)
+     Integración con el repo thelabsolutionscl/Open-Generative-AI:
+     usa la API de muapi.ai con el mismo flujo que OpenGen Studio
+     (POST al endpoint del modelo → polling del resultado), a través
+     del mismo proxy CORS que usa el Studio en GitHub Pages.
      ------------------------------------------------------------ */
   openGenerativeAI: {
     id: 'openGenerativeAI',
-    label: 'OPEN GENERATIVE AI · próximamente',
-    available: false,
-    note: 'Integración pendiente con tu repositorio de OPEN GENERATIVE AI.',
-    async generate() {
-      throw new Error('OPEN GENERATIVE AI aún no está integrado.');
+    label: 'OPEN GENERATIVE AI · OpenGen Studio',
+    available: true,
+    needsKey: true,
+    hasModels: true,
+    note: 'Tu motor propio: Flux, Midjourney, Imagen 4 y más vía muapi.ai. Configura tu clave en Ajustes → OPEN GENERATIVE AI.',
+    async generate({ prompt, size, model }) {
+      const key = lsGet('muapiKey', '');
+      if (!key) throw new Error('Falta tu clave de muapi.ai. Agrégala en Ajustes → OPEN GENERATIVE AI.');
+
+      const ep = model || OGAI_MODELS[0].ep;
+      const ratio = { square: '1:1', landscape: '16:9', portrait: '9:16' }[size] || '1:1';
+
+      const res = await fetch(corsProxy(`https://api.muapi.ai/api/v1/${ep}`), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': key },
+        body: JSON.stringify({ prompt, aspect_ratio: ratio }),
+      });
+      if (!res.ok) {
+        const t = await res.text();
+        throw new Error(`OpenGen respondió ${res.status}: ${t.slice(0, 120)}`);
+      }
+      const data = await res.json();
+      const reqId = data.request_id || data.id;
+      if (!reqId) throw new Error('OpenGen no devolvió request_id.');
+
+      // Polling hasta que el modelo termine (máx ~2.5 min)
+      for (let i = 0; i < 60; i++) {
+        await new Promise((r) => setTimeout(r, 2500));
+        const poll = await fetch(
+          corsProxy(`https://api.muapi.ai/api/v1/predictions/${reqId}/result`),
+          { headers: { 'x-api-key': key } }
+        );
+        const pd = await poll.json();
+        if (pd.status === 'completed' || pd.status === 'succeeded') {
+          const url = pd.url || pd.outputs?.[0] || pd.output?.[0];
+          if (!url) throw new Error('OpenGen no devolvió la URL del resultado.');
+          return fetchImageBlob(url);
+        }
+        if (pd.status === 'failed' || pd.status === 'error') {
+          throw new Error(pd.error || 'La generación falló en el servidor de OpenGen.');
+        }
+      }
+      throw new Error('Tiempo de espera agotado (2.5 min). Intenta con un modelo más rápido.');
     },
   },
 };
+
+/* Modelos texto→imagen de OpenGen Studio (subconjunto curado del repo) */
+const OGAI_MODELS = [
+  { ep: 'flux-schnell-image', name: 'Flux Schnell · ultra-rápido' },
+  { ep: 'flux-dev-image', name: 'Flux Dev · alta calidad' },
+  { ep: 'midjourney-v7-text-to-image', name: 'Midjourney v7 · artístico' },
+  { ep: 'google-imagen4', name: 'Imagen 4 · Google' },
+  { ep: 'gpt4o-text-to-image', name: 'GPT-4o Image · OpenAI' },
+  { ep: 'ideogram-v3', name: 'Ideogram v3 · ideal con texto' },
+  { ep: 'bytedance-seedream-v4.5', name: 'Seedream 4.5 · premium' },
+];
+
+function corsProxy(url) {
+  return 'https://corsproxy.io/?url=' + encodeURIComponent(url);
+}
+
+/* Descarga el resultado como Blob; si el CDN no permite CORS, reintenta vía proxy */
+async function fetchImageBlob(url) {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(String(res.status));
+    return await res.blob();
+  } catch {
+    const res = await fetch(corsProxy(url));
+    if (!res.ok) throw new Error('No se pudo descargar el resultado.');
+    return res.blob();
+  }
+}
 
 function getAvailableProviders() {
   return Object.values(PROVIDERS);

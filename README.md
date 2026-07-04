@@ -12,7 +12,7 @@ dependencias: se abre en el navegador y listo.
   - **Pollinations** — gratis, sin clave ni registro. Funciona de inmediato.
   - **OpenAI (gpt-image-1)** — opcional, con tu propia clave de API
     (se guarda solo en tu navegador).
-  - **OPEN GENERATIVE AI** — punto de integración reservado (ver abajo).
+  - **OPEN GENERATIVE AI (OpenGen Studio)** — integrado (ver abajo).
 - **✏️ Prompts** — biblioteca de prompts reutilizables con etiquetas, copiar y
   "usar" directo en el generador.
 - **📁 Proyectos** — tablero Pendiente / En proceso / Entregado con cliente,
@@ -34,13 +34,21 @@ Descarga el repo y abre `index.html` en tu navegador. Ya está.
 > el dashboard, no en GitHub. Usa **Ajustes → Exportar** para respaldarlos o
 > moverlos a otro dispositivo.
 
-## Integrar OPEN GENERATIVE AI
+## Integración con OPEN GENERATIVE AI
 
-El generador está preparado para conectar un motor propio. La integración vive
-en [`providers.js`](providers.js): hay una entrada `openGenerativeAI` lista para
-implementar su función `generate()` llamando al código o API del repositorio
-OPEN GENERATIVE AI. Al activarla (`available: true`) aparece automáticamente
-como opción en la pestaña **Generar**.
+El motor **OPEN GENERATIVE AI · OpenGen Studio** está integrado en la pestaña
+**Generar**. Replica el flujo del repositorio
+[`Open-Generative-AI`](https://github.com/thelabsolutionscl/Open-Generative-AI):
+llama a la API de [muapi.ai](https://muapi.ai) (POST al endpoint del modelo y
+polling del resultado) a través del mismo proxy CORS que usa OpenGen Studio.
+
+- **Clave**: se configura en **Ajustes → OPEN GENERATIVE AI** (la misma de
+  muapi.ai que usas en el Studio; se guarda solo en tu navegador).
+- **Modelos texto→imagen disponibles**: Flux Schnell, Flux Dev, Midjourney v7,
+  Imagen 4, GPT-4o Image, Ideogram v3 y Seedream 4.5 (subconjunto curado del
+  Studio, definido en `OGAI_MODELS` dentro de [`providers.js`](providers.js)).
+- Para **video, audio y edición de imágenes**, el dashboard enlaza al Studio
+  completo.
 
 ## Estructura
 

@@ -560,8 +560,7 @@ textarea.input { resize: vertical; }
   letter-spacing: 0.3px;
 }
 .badge-soon { background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent); }
-
-.card-integration { border-style: dashed; }
+.badge-on { background: rgba(12, 163, 12, 0.1); color: var(--good-text); border: 1px solid var(--good); }
 
 .card-danger { border-color: rgba(208, 59, 59, 0.35); }
 

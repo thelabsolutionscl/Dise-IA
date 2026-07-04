@@ -148,8 +148,12 @@ function renderHome() {
 /* ===== Galería ===== */
 
 async function loadDesigns() {
-  const rows = await idbGetAllDesigns();
-  state.designs = rows.map((d) => ({ ...d, url: URL.createObjectURL(d.blob) }));
+  try {
+    const rows = await idbGetAllDesigns();
+    state.designs = rows.map((d) => ({ ...d, url: URL.createObjectURL(d.blob) }));
+  } catch {
+    state.designs = []; // IndexedDB no disponible: la app sigue funcionando sin persistencia
+  }
 }
 
 function allGalleryTags() {
@@ -329,8 +333,18 @@ function initGenerate() {
     select.appendChild(opt);
   });
 
+  const modelSelect = $('#gen-ogai-model');
+  OGAI_MODELS.forEach((m) => {
+    const opt = document.createElement('option');
+    opt.value = m.ep;
+    opt.textContent = m.name;
+    modelSelect.appendChild(opt);
+  });
+
   const updateNote = () => {
-    $('#provider-note').textContent = getProvider(select.value).note || '';
+    const p = getProvider(select.value);
+    $('#provider-note').textContent = p.note || '';
+    $('#ogai-model-field').hidden = !p.hasModels;
   };
   select.addEventListener('change', updateNote);
   updateNote();
@@ -389,7 +403,8 @@ async function generateDesign() {
   $('#btn-generate').disabled = true;
 
   try {
-    const blob = await provider.generate({ prompt, size });
+    const model = provider.hasModels ? $('#gen-ogai-model').value : undefined;
+    const blob = await provider.generate({ prompt, size, model });
     state.lastGeneration = { blob, prompt, provider: provider.id };
     const url = URL.createObjectURL(blob);
     const img = $('#result-img');
@@ -620,6 +635,12 @@ function initSettings() {
   $('#btn-save-key').addEventListener('click', () => {
     lsSet('openaiKey', $('#openai-key').value.trim());
     toast('Clave guardada en este navegador 🔐');
+  });
+
+  $('#muapi-key').value = lsGet('muapiKey', '');
+  $('#btn-save-muapi-key').addEventListener('click', () => {
+    lsSet('muapiKey', $('#muapi-key').value.trim());
+    toast('Clave de muapi guardada 🔐');
   });
 
   $('#btn-export').addEventListener('click', async () => {
