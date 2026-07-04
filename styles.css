@@ -119,6 +119,25 @@ body {
 a.nav-item { text-decoration: none; }
 .nav-ext { margin-left: auto; color: var(--ink-3); font-size: 12px; }
 
+/* ===== Studio embebido ===== */
+
+.view-studio .view-header { margin-bottom: 14px; }
+
+.studio-frame {
+  width: 100%;
+  height: calc(100vh - 150px);
+  min-height: 560px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #0a0a12;
+  display: block;
+  box-shadow: var(--shadow);
+}
+
+@media (max-width: 900px) {
+  .studio-frame { height: calc(100vh - 200px); min-height: 480px; }
+}
+
 .sidebar-footer {
   margin-top: auto;
   display: flex;
