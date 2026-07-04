@@ -31,6 +31,14 @@ python3 -m http.server 8123 &   # desde la raíz del repo
 
 ## Gotchas
 
+- La app registra un **service worker** en localhost (network-first, no afecta tests
+  con servidor vivo). Cada `chromium.launch()` limpia el registro.
+- `exportPresentation` usa `window.prompt` → manejar con `page.on('dialog')`.
+- Al subir imágenes, pasan por `processImage` (WebP + miniatura); un archivo no
+  decodificable (HEIC falso) debe producir toast de aviso, no un diseño roto.
+- Playwright: usar **un solo `browser.newContext()`** para pestañas que deben
+  compartir localStorage (dashboard + studio/).
+
 - La generación con **Pollinations falla en el sandbox** (`ERR_TUNNEL_CONNECTION_FAILED`, el proxy
   bloquea image.pollinations.ai). No es un bug de la app: verificar solo que el error se maneja con toast.
 - Los chips tienen `transition: all 0.12s` — esperar ~300ms antes de leer `getComputedStyle`.

@@ -1,65 +1,89 @@
 # 🎨 Dise-IA · Dashboard de Diseño Flopilove
 
-Dashboard personal de diseño con IA. Una sola página web, sin instalaciones ni
-dependencias: se abre en el navegador y listo.
+Dashboard personal de diseño con IA para trabajo freelance. Una sola página web,
+sin instalaciones ni dependencias — y también **app instalable (PWA)** que
+funciona sin conexión.
+
+**En vivo:** https://thelabsolutionscl.github.io/Dise-IA/
 
 ## Qué incluye
 
-- **🖼 Galería** — sube tus diseños (arrastrar y soltar), etiquétalos, márcalos
-  como favoritos, búscalos y descárgalos. Se guardan en tu navegador (IndexedDB).
-- **⚡ Generar** — genera diseños con IA escribiendo un prompt, con estilos
-  rápidos (minimalista, acuarela, 3D, logo…). Motores disponibles:
-  - **Pollinations** — gratis, sin clave ni registro. Funciona de inmediato.
-  - **OpenAI (gpt-image-1)** — opcional, con tu propia clave de API
-    (se guarda solo en tu navegador).
-  - **OPEN GENERATIVE AI (OpenGen Studio)** — integrado (ver abajo).
-- **✏️ Prompts** — biblioteca de prompts reutilizables con etiquetas, copiar y
-  "usar" directo en el generador.
+- **🖼 Galería** — sube tus diseños (arrastrar y soltar), etiquétalos, favoritos,
+  búsqueda y descarga. Las imágenes se comprimen a WebP con miniaturas
+  automáticas, y se guardan en tu navegador (IndexedDB, con almacenamiento
+  persistente solicitado al navegador).
+- **⚡ Generar** — diseños por prompt con estilos rápidos y tres motores:
+  - **Pollinations** — gratis, sin clave ni registro.
+  - **OpenAI (gpt-image-1)** — opcional, con tu propia clave.
+  - **OPEN GENERATIVE AI (OpenGen Studio)** — tu motor propio vía muapi.ai,
+    con Flux, Midjourney v7, Imagen 4, GPT-4o Image y más.
+  - Con **kit de marca**: elige un cliente y su paleta/tipografías se inyectan
+    al prompt.
+- **🎬 Studio** — OpenGen Studio completo embebido como sección del dashboard
+  (video, audio, edición, upscale), con clave compartida y pantalla completa.
+- **✏️ Prompts** — biblioteca reutilizable: copiar, usar en el generador o
+  enviar directo al Studio.
 - **📁 Proyectos** — tablero Pendiente / En proceso / Entregado con cliente,
-  fecha límite y notas.
-- **Ajustes** — modo claro/oscuro, exportar/importar respaldo completo (.json).
+  fecha límite (aviso de atraso en tu zona horaria), **precio y estado de
+  pago**, **paleta y tipografías del cliente**, y diseños vinculados.
+  Exporta tus entregas a Google/Apple Calendar (**.ics**).
+- **🎁 Presentaciones** — selecciona diseños de la galería y expórtalos como
+  una página HTML elegante para enviar a tu cliente.
+- **Inicio** — resumen con estadísticas, próximas entregas y últimos diseños.
+- **Ajustes** — tema claro/oscuro, claves de API, proxy propio, y
+  exportar/importar respaldo completo (con recordatorio si llevas 7+ días
+  sin respaldar).
 
 ## Cómo usarlo
 
-### Opción 1: abrir localmente
-Descarga el repo y abre `index.html` en tu navegador. Ya está.
+- **Online:** https://thelabsolutionscl.github.io/Dise-IA/ (se actualiza solo
+  al fusionar a `main`).
+- **Como app:** ábrelo en el navegador y usa "Instalar app" / "Añadir a
+  pantalla de inicio". Funciona offline (salvo la generación con IA).
+- **Local:** descarga el repo y abre `index.html`.
 
-### Opción 2: publicarlo con GitHub Pages (recomendado)
-1. En GitHub, ve a **Settings → Pages** de este repositorio.
-2. En *Source* elige **Deploy from a branch**, rama `main`, carpeta `/ (root)`.
-3. Guarda. En un minuto tu dashboard estará en
-   `https://<tu-usuario>.github.io/Dise-IA/`.
-
-> 💡 Tus datos (diseños, prompts, proyectos) viven en el navegador donde uses
-> el dashboard, no en GitHub. Usa **Ajustes → Exportar** para respaldarlos o
-> moverlos a otro dispositivo.
+> 💡 Tus datos (diseños, prompts, proyectos, claves) viven en el navegador
+> donde uses el dashboard, no en GitHub. Usa **Ajustes → Exportar** para
+> respaldarlos o moverlos a otro dispositivo.
 
 ## Integración con OPEN GENERATIVE AI
 
-El motor **OPEN GENERATIVE AI · OpenGen Studio** está integrado en la pestaña
-**Generar**. Replica el flujo del repositorio
+El motor replica el flujo del repositorio
 [`Open-Generative-AI`](https://github.com/thelabsolutionscl/Open-Generative-AI):
 llama a la API de [muapi.ai](https://muapi.ai) (POST al endpoint del modelo y
-polling del resultado) a través del mismo proxy CORS que usa OpenGen Studio.
+polling del resultado) a través de un proxy CORS.
 
-- **Clave**: se configura en **Ajustes → OPEN GENERATIVE AI** (la misma de
-  muapi.ai que usas en el Studio; se guarda solo en tu navegador).
-- **Modelos texto→imagen disponibles**: Flux Schnell, Flux Dev, Midjourney v7,
-  Imagen 4, GPT-4o Image, Ideogram v3 y Seedream 4.5 (subconjunto curado del
-  Studio, definido en `OGAI_MODELS` dentro de [`providers.js`](providers.js)).
-- **Studio integrado en el dashboard**: la app OpenGen Studio vive en
-  [`studio/`](studio/) y se muestra embebida como sección 🎬 **Studio** del
-  propio dashboard (video, audio, edición, upscale y más), con opción de
-  abrirla a pantalla completa. Comparte la clave de muapi.ai con el
-  dashboard, guardándola en el navegador para no tener que pegarla en cada
-  visita.
+- **Clave**: en **Ajustes → OPEN GENERATIVE AI** (compartida con el Studio,
+  guardada solo en tu navegador).
+- **Modelos texto→imagen**: definidos en `OGAI_MODELS` dentro de
+  [`providers.js`](providers.js).
+- **Studio completo**: instalado en [`studio/`](studio/) y embebido como
+  sección del dashboard.
+
+## Proxy propio (privacidad)
+
+Por defecto las llamadas a muapi.ai pasan por un proxy CORS público que puede
+ver tu clave. Para privacidad total, despliega tu propio proxy gratuito:
+
+1. Entra a [dash.cloudflare.com](https://dash.cloudflare.com) → Workers & Pages
+   → Create Worker.
+2. Pega el contenido de [`proxy/worker.js`](proxy/worker.js) y dale Deploy.
+3. En el dashboard: **Ajustes → Proxy propio** → pega
+   `https://tu-worker.workers.dev/?url=`
+
+El worker solo permite los hosts que usa el dashboard (allowlist), así nadie
+más puede aprovecharlo.
 
 ## Estructura
 
 ```
-index.html     → estructura de la app (vistas, modales)
-styles.css     → estilos y temas claro/oscuro
-app.js         → lógica del dashboard
-providers.js   → motores de generación de imágenes (integraciones IA)
-db.js          → almacenamiento local (IndexedDB + localStorage)
+index.html            → estructura de la app (vistas, modales)
+styles.css            → estilos y temas claro/oscuro
+app.js                → lógica del dashboard
+providers.js          → motores de generación (integraciones IA)
+db.js                 → almacenamiento local + compresión de imágenes
+sw.js                 → service worker (PWA / offline)
+manifest.webmanifest  → manifiesto de la app instalable
+studio/index.html     → OpenGen Studio instalado (clave y proxy compartidos)
+proxy/worker.js       → proxy CORS propio (Cloudflare Worker, opcional)
 ```

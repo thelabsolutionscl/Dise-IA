@@ -96,6 +96,49 @@ function lsRemoveAll() {
   keys.forEach((k) => localStorage.removeItem(k));
 }
 
+/* ===== Procesamiento de imágenes (compresión + miniaturas) ===== */
+
+const IMG_MAX_FULL = 2048;   // lado máximo del diseño guardado
+const IMG_MAX_THUMB = 480;   // lado máximo de la miniatura de galería
+
+function scaleToBlob(bitmap, maxSize, quality) {
+  const scale = Math.min(1, maxSize / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+  canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+  canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  return new Promise((resolve) => canvas.toBlob(resolve, 'image/webp', quality));
+}
+
+/**
+ * Comprime una imagen a WebP y genera su miniatura.
+ * Devuelve { full, thumb } o null si el navegador no puede decodificarla
+ * (p. ej. fotos HEIC de iPhone).
+ * Los GIF conservan el original como `full` para no perder la animación.
+ */
+async function processImage(blob) {
+  // SVG: es vectorial y liviano, se guarda tal cual (createImageBitmap no lo decodifica)
+  if (blob.type === 'image/svg+xml') return { full: blob, thumb: null };
+  let bitmap;
+  try {
+    bitmap = await createImageBitmap(blob);
+  } catch {
+    return null;
+  }
+  try {
+    const thumb = await scaleToBlob(bitmap, IMG_MAX_THUMB, 0.8);
+    let full = blob;
+    if (blob.type !== 'image/gif') {
+      const compressed = await scaleToBlob(bitmap, IMG_MAX_FULL, 0.85);
+      // Solo se reemplaza el original si la compresión realmente ahorra espacio
+      if (compressed && compressed.size < blob.size) full = compressed;
+    }
+    return { full, thumb: thumb || null };
+  } finally {
+    bitmap.close();
+  }
+}
+
 /* ===== Utilidades blob <-> dataURL (para exportar/importar) ===== */
 
 function blobToDataURL(blob) {
