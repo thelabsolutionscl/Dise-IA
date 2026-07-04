@@ -439,6 +439,12 @@ const EXAMPLES = {
 let apiKey = '';
 // Clave compartida con el dashboard Flopilove (misma origin)
 try { const _k = localStorage.getItem('flopilove:muapiKey'); if (_k) apiKey = JSON.parse(_k) || ''; } catch (e) {}
+// Proxy CORS configurable (Ajustes del dashboard → Proxy propio)
+function _proxy(u) {
+  let base = 'https://corsproxy.io/?url=';
+  try { const v = JSON.parse(localStorage.getItem('flopilove:proxyUrl') || '""'); if (v) base = v; } catch (e) {}
+  return base + encodeURIComponent(u);
+}
 let currentSection = 't2i';
 let selectedModel = {};
 let uploadedImageUrl = null;
@@ -486,7 +492,7 @@ async function uploadImageForAPI(base64DataUrl) {
   // Use MuAPI's own upload endpoint — returns URLs already in their allowlist
   const fd = new FormData();
   fd.append('file', file);
-  const res = await fetch('https://corsproxy.io/?url=' + encodeURIComponent('https://api.muapi.ai/api/v1/upload_file'), {
+  const res = await fetch(_proxy('https://api.muapi.ai/api/v1/upload_file'), {
     method: 'POST',
     headers: { 'x-api-key': apiKey },
     body: fd
@@ -541,6 +547,14 @@ document.addEventListener('DOMContentLoaded', () => {
   if (apiKey) {
     document.getElementById('key-btn').textContent = '✓ Key';
     document.getElementById('key-btn').className = 'top-btn key-ok';
+  }
+  const _q = new URLSearchParams(location.search).get('prompt');
+  if (_q) {
+    const _ta = document.getElementById('prompt-ta');
+    _ta.value = _q;
+    _ta.dispatchEvent(new Event('input'));
+    if (typeof onPromptInput === 'function') onPromptInput();
+    if (typeof updateGenBtn === 'function') updateGenBtn();
   }
   document.getElementById('prompt-ta').addEventListener('input', onPromptInput);
   document.getElementById('prompt-ta').addEventListener('keydown', e => { if(e.key==='Enter' && (e.metaKey||e.ctrlKey)) generate(); });
@@ -764,7 +778,7 @@ async function generate(){
   else if(!info.isAudio && !info.noPrompt){ body.aspect_ratio=currentImgRatio; }
 
   try {
-    const res = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(`https://api.muapi.ai/api/v1/${model.ep}`)}`, {
+    const res = await fetch(_proxy(`https://api.muapi.ai/api/v1/${model.ep}`), {
       method:'POST', headers:{'Content-Type':'application/json','x-api-key':apiKey},
       body: JSON.stringify(body)
     });
@@ -778,7 +792,7 @@ async function generate(){
     while(attempts<90){
       await sleep(2500); attempts++;
       setProgress(Math.min(92, 30+attempts*1.5));
-      const poll = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(`https://api.muapi.ai/api/v1/predictions/${reqId}/result`)}`,{headers:{'x-api-key':apiKey}});
+      const poll = await fetch(_proxy(`https://api.muapi.ai/api/v1/predictions/${reqId}/result`),{headers:{'x-api-key':apiKey}});
       const pd = await poll.json();
       if(pd.status==='completed'||pd.status==='succeeded'){
         const url = pd.url||pd.outputs?.[0]||pd.output?.[0];

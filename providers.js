@@ -141,7 +141,10 @@ const OGAI_MODELS = [
 ];
 
 function corsProxy(url) {
-  return 'https://corsproxy.io/?url=' + encodeURIComponent(url);
+  // Configurable en Ajustes: un proxy propio (proxy/worker.js) evita exponer
+  // la clave a un servicio de terceros. La URL debe terminar en "?url=".
+  const base = lsGet('proxyUrl', '') || 'https://corsproxy.io/?url=';
+  return base + encodeURIComponent(url);
 }
 
 /* Descarga el resultado como Blob; si el CDN no permite CORS, reintenta vía proxy */
