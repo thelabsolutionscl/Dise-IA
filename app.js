@@ -162,8 +162,14 @@ function initNav() {
 
 /* ===== Persistencia ligera ===== */
 
-function savePrompts() { lsSet('prompts', state.prompts); }
-function saveProjects() { lsSet('projects', state.projects); }
+function savePrompts() {
+  lsSet('prompts', state.prompts);
+  atSoon(); // sincronización con Airtable (si está configurada)
+}
+function saveProjects() {
+  lsSet('projects', state.projects);
+  atSoon();
+}
 
 /* ===== Inicio ===== */
 
@@ -357,11 +363,13 @@ async function addDesignFromBlob(blob, { name = '', tags = [], prompt = '', prov
     createdAt: Date.now(),
   };
   await idbPutDesign(design);
-  state.designs.push({
+  const item = {
     ...design,
     url: URL.createObjectURL(design.blob),
     thumbUrl: design.thumb ? URL.createObjectURL(design.thumb) : null,
-  });
+  };
+  state.designs.push(item);
+  atDesignSaved(item);
   return design;
 }
 
@@ -512,6 +520,7 @@ function initLightbox() {
     d.tags = parseTags($('#lightbox-tags').value);
     d.projectId = $('#lightbox-project').value;
     await idbPutDesign(designRecord(d));
+    atDesignSaved(d);
     toast('Diseño actualizado 💾');
     $('#lightbox').hidden = true;
     renderGallery();
@@ -524,6 +533,7 @@ function initLightbox() {
     if (!d) return;
     d.favorite = !d.favorite;
     await idbPutDesign(designRecord(d));
+    atDesignSaved(d);
     $('#btn-lightbox-fav').textContent = d.favorite ? '★ Quitar favorito' : '☆ Favorito';
     renderGallery();
   });
@@ -547,6 +557,7 @@ function initLightbox() {
     if (d.thumbUrl) URL.revokeObjectURL(d.thumbUrl);
     state.selected.delete(d.id);
     state.designs = state.designs.filter((x) => x.id !== d.id);
+    atDesignDeleted(d.id);
     $('#lightbox').hidden = true;
     toast('Diseño eliminado');
     renderGallery();
@@ -994,6 +1005,33 @@ function initSettings() {
     lsSet('proxyUrl', v);
     toast(v ? 'Proxy propio guardado 🔒' : 'Usando el proxy público');
   });
+
+  // --- Airtable ---
+  $('#at-token').value = lsGet('atToken', '');
+  $('#at-base').value = lsGet('atBase', '');
+  $('#btn-at-save').addEventListener('click', () => {
+    const token = $('#at-token').value.trim();
+    const base = $('#at-base').value.trim();
+    if (token && !token.startsWith('pat')) { toast('⚠️ El token de Airtable empieza con "pat"'); return; }
+    if (base && !base.startsWith('app')) { toast('⚠️ El ID de la base empieza con "app" (está en la URL de la base)'); return; }
+    lsSet('atToken', token);
+    lsSet('atBase', base);
+    lsSet('atSetupDone', false); // si cambió la base, hay que re-verificar las tablas
+    toast(token && base ? 'Airtable configurado ☁️ — usa "Sincronizar ahora"' : 'Airtable desconectado');
+    atStatus(token && base ? 'Listo para sincronizar' : '');
+  });
+  $('#btn-at-sync').addEventListener('click', () => {
+    if (!atReady()) { toast('⚠️ Guarda primero tu token y el ID de la base'); return; }
+    atQueue(atPushAll);
+  });
+  $('#btn-at-pull').addEventListener('click', () => {
+    if (!atReady()) { toast('⚠️ Guarda primero tu token y el ID de la base'); return; }
+    atQueue(atPullAll);
+  });
+  const lastSync = lsGet('atLastSync', 0);
+  if (atReady() && lastSync) {
+    atStatus('Última sincronización: ' + new Date(lastSync).toLocaleString('es', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }));
+  }
 
   $('#btn-export').addEventListener('click', async () => {
     toast('Preparando respaldo…');

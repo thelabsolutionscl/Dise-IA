@@ -6,13 +6,14 @@
    Sube la versión del caché al cambiar archivos del app shell.
    ============================================================ */
 
-const CACHE = 'flopilove-v1';
+const CACHE = 'flopilove-v2';
 const APP_SHELL = [
   './',
   'index.html',
   'styles.css',
   'app.js',
   'providers.js',
+  'airtable.js',
   'db.js',
   'manifest.webmanifest',
   'icon-192.png',

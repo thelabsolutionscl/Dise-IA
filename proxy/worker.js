@@ -19,6 +19,8 @@
    ============================================================ */
 
 const ALLOWED_HOSTS = ['api.muapi.ai', 'image.pollinations.ai'];
+// Adjuntos de Airtable (para "Restaurar desde Airtable" cuando su CDN no permite CORS)
+const ALLOWED_SUFFIXES = ['.airtableusercontent.com'];
 
 export default {
   async fetch(request) {
@@ -31,7 +33,10 @@ export default {
     } catch {
       return new Response('URL inválida', { status: 400 });
     }
-    if (dest.protocol !== 'https:' || !ALLOWED_HOSTS.includes(dest.hostname)) {
+    const hostOk =
+      ALLOWED_HOSTS.includes(dest.hostname) ||
+      ALLOWED_SUFFIXES.some((s) => dest.hostname.endsWith(s));
+    if (dest.protocol !== 'https:' || !hostOk) {
       return new Response('Host no permitido', { status: 403 });
     }
 
