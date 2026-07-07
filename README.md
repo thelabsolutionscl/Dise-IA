@@ -30,9 +30,9 @@ funciona sin conexión.
 - **🎁 Presentaciones** — selecciona diseños de la galería y expórtalos como
   una página HTML elegante para enviar a tu cliente.
 - **Inicio** — resumen con estadísticas, próximas entregas y últimos diseños.
-- **Ajustes** — tema claro/oscuro, claves de API, proxy propio, y
-  exportar/importar respaldo completo (con recordatorio si llevas 7+ días
-  sin respaldar).
+- **Ajustes** — tema claro/oscuro, claves de API, proxy propio,
+  sincronización con Airtable, y exportar/importar respaldo completo
+  (con recordatorio si llevas 7+ días sin respaldar).
 
 ## Cómo usarlo
 
@@ -60,6 +60,41 @@ polling del resultado) a través de un proxy CORS.
 - **Studio completo**: instalado en [`studio/`](studio/) y embebido como
   sección del dashboard.
 
+## Sincronización con Airtable
+
+En **Ajustes → Airtable** puedes sincronizar tus proyectos (y prompts) con una
+base de Airtable, para verlos y editarlos fuera del navegador:
+
+1. Crea un token en [airtable.com/create/tokens](https://airtable.com/create/tokens)
+   con los permisos `data.records:read` y `data.records:write` sobre tu base.
+2. Pega el token y el ID de la base (empieza con `app`, visible en la URL de
+   la base) en **Ajustes → Airtable**.
+3. **⬆️ Enviar** sube tus datos locales a Airtable (crea o actualiza por
+   `Local ID`); **⬇️ Traer** baja lo de Airtable al navegador. Lo borrado en
+   un lado no se borra en el otro.
+
+La base debe tener una tabla **`Diseño - Proyectos`** con estas columnas
+(los nombres deben coincidir):
+
+| Columna | Tipo |
+| --- | --- |
+| Nombre | Texto (campo principal) |
+| Cliente | Texto |
+| Estado | Selección única: `Pendiente`, `En proceso`, `Entregado` |
+| Fecha límite | Fecha (ISO) |
+| Precio | Texto |
+| Pago | Selección única: `Pendiente`, `Parcial`, `Pagado` |
+| Paleta | Texto |
+| Tipografías | Texto |
+| Notas | Texto largo |
+| Local ID | Texto (clave de sincronización — no editar) |
+| Actualizado | Fecha y hora |
+
+Opcionalmente, una tabla **`Diseño - Prompts`** con `Título` (principal),
+`Prompt` (texto largo), `Etiquetas` (texto) y `Local ID` (texto) sincroniza
+también la biblioteca de prompts. Si no existe, los prompts simplemente se
+omiten.
+
 ## Proxy propio (privacidad)
 
 Por defecto las llamadas a muapi.ai pasan por un proxy CORS público que puede
@@ -81,6 +116,7 @@ index.html            → estructura de la app (vistas, modales)
 styles.css            → estilos y temas claro/oscuro
 app.js                → lógica del dashboard
 providers.js          → motores de generación (integraciones IA)
+airtable.js           → sincronización opcional con Airtable
 db.js                 → almacenamiento local + compresión de imágenes
 sw.js                 → service worker (PWA / offline)
 manifest.webmanifest  → manifiesto de la app instalable

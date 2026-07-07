@@ -354,6 +354,32 @@
           </div>
 
           <div class="card">
+            <h2>Airtable <span class="badge badge-soft">sincronización</span></h2>
+            <p class="card-desc">
+              Sincroniza tus <strong>proyectos</strong> (y tus prompts, si creas esa tabla) con tu base de
+              Airtable, para verlos y editarlos fuera de este navegador. Crea un token en
+              <a href="https://airtable.com/create/tokens" target="_blank" rel="noopener">airtable.com/create/tokens</a>
+              con los permisos <code>data.records:read</code> y <code>data.records:write</code> sobre tu base,
+              y pégalo aquí — se guarda solo en este navegador. <strong>Enviar</strong> sube lo local a Airtable;
+              <strong>Traer</strong> baja lo de Airtable hacia acá (lo borrado no se sincroniza).
+            </p>
+            <label class="field-label" for="airtable-token">Token personal (pat…)</label>
+            <div class="key-row">
+              <input type="password" id="airtable-token" class="input" placeholder="pat…">
+            </div>
+            <label class="field-label" for="airtable-base">ID de la base (app…)</label>
+            <div class="key-row">
+              <input type="text" id="airtable-base" class="input" placeholder="app…">
+              <button class="btn" id="btn-save-airtable">Guardar</button>
+            </div>
+            <div class="form-actions">
+              <button class="btn" id="btn-airtable-push">⬆️ Enviar a Airtable</button>
+              <button class="btn" id="btn-airtable-pull">⬇️ Traer de Airtable</button>
+            </div>
+            <p class="provider-note" id="airtable-status"></p>
+          </div>
+
+          <div class="card">
             <h2>Respaldo de datos</h2>
             <p class="card-desc">
               Tus diseños, prompts y proyectos viven en este navegador. Exporta un respaldo de vez en cuando,
@@ -483,5 +509,6 @@
   <script src="db.js"></script>
   <script src="providers.js"></script>
   <script src="app.js"></script>
+  <script src="airtable.js"></script>
 </body>
 </html>
