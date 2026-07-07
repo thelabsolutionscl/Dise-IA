@@ -30,7 +30,10 @@ funciona sin conexión.
 - **🎁 Presentaciones** — selecciona diseños de la galería y expórtalos como
   una página HTML elegante para enviar a tu cliente.
 - **Inicio** — resumen con estadísticas, próximas entregas y últimos diseños.
-- **Ajustes** — tema claro/oscuro, claves de API, proxy propio, y
+- **☁️ Airtable (opcional)** — sincroniza proyectos, prompts y diseños (con
+  imagen) a una base de Airtable tuya: respaldo en la nube, acceso desde
+  cualquier dispositivo y botón "Restaurar" para bajar todo en otro equipo.
+- **Ajustes** — tema claro/oscuro, claves de API, proxy propio, Airtable, y
   exportar/importar respaldo completo (con recordatorio si llevas 7+ días
   sin respaldar).
 
@@ -59,6 +62,23 @@ polling del resultado) a través de un proxy CORS.
   [`providers.js`](providers.js).
 - **Studio completo**: instalado en [`studio/`](studio/) y embebido como
   sección del dashboard.
+
+## Sincronización con Airtable
+
+La app habla directo con la API de Airtable desde tu navegador — el token
+nunca sale de él. Para conectarla:
+
+1. Crea (o usa) una cuenta de Airtable **tuya** y una base vacía.
+2. Genera un token en [airtable.com/create/tokens](https://airtable.com/create/tokens)
+   con permisos `data.records:read`, `data.records:write`, `schema.bases:read`
+   y `schema.bases:write`, con acceso solo a esa base.
+3. En **Ajustes → Airtable** pega el token (`pat…`) y el ID de la base
+   (`app…`, está en la URL de la base) → **Guardar** → **Sincronizar ahora**.
+
+La primera sincronización crea las tablas (Proyectos, Prompts, Diseños)
+automáticamente. Desde ahí, cada cambio se sube solo, lo borrado local se
+borra en la nube, y en otro dispositivo basta pegar el mismo token y usar
+**Restaurar desde Airtable**. La lógica vive en [`airtable.js`](airtable.js).
 
 ## Proxy propio (privacidad)
 
