@@ -133,7 +133,19 @@ async function atSetup() {
 }
 
 async function atEnsureSetup() {
-  if (!lsGet('atSetupDone', false)) await atSetup();
+  if (lsGet('atSetupDone', false)) return;
+  try {
+    await atSetup();
+  } catch (e) {
+    // Token sin permisos de esquema: si las tablas ya existen (creadas a mano
+    // o preparadas por Claude), se puede sincronizar igual — cualquier error
+    // real aparecerá en las llamadas de registros con su propio mensaje.
+    if (/permission|scope|forbidden|not authorized|model was not found/i.test(String(e.message || ''))) {
+      lsSet('atSetupDone', true);
+      return;
+    }
+    throw e;
+  }
 }
 
 /* ===== Campos local → Airtable ===== */

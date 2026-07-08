@@ -68,15 +68,16 @@ polling del resultado) a través de un proxy CORS.
 La app habla directo con la API de Airtable desde tu navegador — el token
 nunca sale de él. Para conectarla:
 
-1. Crea (o usa) una cuenta de Airtable **tuya** y una base vacía.
+1. Usa una base preparada (existe **Flopilove Dashboard**, `appGuzyaPw7QJDVX1`,
+   con las tablas ya creadas) o crea una base vacía en tu cuenta.
 2. Genera un token en [airtable.com/create/tokens](https://airtable.com/create/tokens)
-   con permisos `data.records:read`, `data.records:write`, `schema.bases:read`
-   y `schema.bases:write`, con acceso solo a esa base.
+   con permisos `data.records:read` y `data.records:write` para esa base
+   (si la base está vacía, agrega también `schema.bases:read` y
+   `schema.bases:write` para que la app cree las tablas sola).
 3. En **Ajustes → Airtable** pega el token (`pat…`) y el ID de la base
    (`app…`, está en la URL de la base) → **Guardar** → **Sincronizar ahora**.
 
-La primera sincronización crea las tablas (Proyectos, Prompts, Diseños)
-automáticamente. Desde ahí, cada cambio se sube solo, lo borrado local se
+Desde ahí, cada cambio se sube solo, lo borrado local se
 borra en la nube, y en otro dispositivo basta pegar el mismo token y usar
 **Restaurar desde Airtable**. La lógica vive en [`airtable.js`](airtable.js).
 
