@@ -358,11 +358,11 @@
             <p class="card-desc">
               Sincroniza tus proyectos, prompts y diseños con una base de Airtable <strong>tuya</strong>:
               respaldo en la nube y acceso desde cualquier dispositivo.
-              Crea una base vacía en tu cuenta, genera un token en
+              Genera un token en
               <a href="https://airtable.com/create/tokens" target="_blank" rel="noopener">airtable.com/create/tokens</a>
-              con permisos <code>data.records:read</code>, <code>data.records:write</code>,
-              <code>schema.bases:read</code> y <code>schema.bases:write</code> (solo para esa base),
-              y pega ambos aquí. La primera sincronización crea las tablas automáticamente.
+              con permisos <code>data.records:read</code> y <code>data.records:write</code> para tu base,
+              y pega ambos aquí. Si tu base está vacía, agrega también <code>schema.bases:read</code> y
+              <code>schema.bases:write</code> para que la app cree las tablas sola.
             </p>
             <label class="field-label" for="at-token">Token personal (pat…)</label>
             <input type="password" id="at-token" class="input" placeholder="pat…">
